@@ -244,13 +244,6 @@ public partial class MainWindow : Window
                 return;
             }
 
-            if (!IsUnderAppRoot(entry.FullPath))
-            {
-                MessageBox.Show("Bu öğe yeniden adlandırılamaz.", "Yeniden adlandır", MessageBoxButton.OK, MessageBoxImage.Warning);
-                entry.IsRenaming = false;
-                return;
-            }
-
             if (_cloud.IsExternalPath(entry.FullPath))
             {
                 MessageBox.Show("Harici bulut konumu değiştirilemez.", "Yeniden adlandır", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -357,13 +350,18 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (!entry.IsFolder)
+        if (!entry.IsFolder || string.IsNullOrWhiteSpace(entry.FullPath))
         {
             return;
         }
 
-        var relative = ToCleanupRelativePath(entry.Name);
-        await RunBinObjCleanupAsync([relative]);
+        if (_cloud.IsExternalPath(entry.FullPath))
+        {
+            AppendLogKey("LogCloudDeleteBlocked");
+            return;
+        }
+
+        await RunBinObjCleanupAsync([Path.GetFullPath(entry.FullPath)]);
     }
 
     private async void DeleteItemButton_Click(object sender, RoutedEventArgs e)
@@ -375,12 +373,6 @@ public partial class MainWindow : Window
 
         if (!entry.CanDelete || string.IsNullOrWhiteSpace(entry.FullPath))
         {
-            return;
-        }
-
-        if (!IsUnderAppRoot(entry.FullPath))
-        {
-            AppendLogKey("LogDeleteOutsideRoot");
             return;
         }
 
@@ -568,25 +560,17 @@ public partial class MainWindow : Window
         return null;
     }
 
-    private string ToCleanupRelativePath(string itemName)
-    {
-        var full = Path.GetFullPath(Path.Combine(_currentPath, itemName));
-        var relative = Path.GetRelativePath(_appRoot, full);
-        return relative.Replace('/', '\\');
-    }
-
     private List<string> CollectFolderNamesFromList()
     {
         var set = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var row in _rows.Where(r => r.IsFolder && (r.IsSelectedForCleanup || SizeGrid.SelectedItems.Contains(r))))
         {
-            var full = Path.GetFullPath(Path.Combine(_currentPath, row.Name));
-            if (!IsUnderAppRoot(full))
+            if (string.IsNullOrWhiteSpace(row.FullPath) || _cloud.IsExternalPath(row.FullPath))
             {
                 continue;
             }
 
-            set.Add(ToCleanupRelativePath(row.Name));
+            set.Add(Path.GetFullPath(row.FullPath));
         }
 
         return set.OrderBy(n => n, StringComparer.OrdinalIgnoreCase).ToList();
@@ -623,9 +607,8 @@ public partial class MainWindow : Window
         var paths = new List<string>();
         foreach (var entry in entries)
         {
-            if (!IsUnderAppRoot(entry.FullPath))
+            if (string.IsNullOrWhiteSpace(entry.FullPath))
             {
-                AppendLogKey("LogSkippedOutsideRoot", entry.Name);
                 continue;
             }
 
@@ -955,14 +938,6 @@ public partial class MainWindow : Window
         return Directory.Exists(full);
     }
 
-    private bool IsUnderAppRoot(string path)
-    {
-        var full = Path.GetFullPath(path).TrimEnd('\\');
-        var root = _appRoot.TrimEnd('\\');
-        if (full.Equals(root, StringComparison.OrdinalIgnoreCase)) return true;
-        return full.StartsWith(root + '\\', StringComparison.OrdinalIgnoreCase);
-    }
-
     private static bool PathsEqual(string a, string b) =>
         Path.GetFullPath(a).TrimEnd('\\').Equals(Path.GetFullPath(b).TrimEnd('\\'), StringComparison.OrdinalIgnoreCase);
 
@@ -982,19 +957,11 @@ public partial class MainWindow : Window
         }
 
         var parent = Directory.GetParent(path)?.FullName;
-        while (parent is not null && IsUnderAppRootStatic(parent, _appRoot))
+        while (parent is not null)
         {
             _folderCache.Remove(CacheKey(parent));
             parent = Directory.GetParent(parent)?.FullName;
         }
-    }
-
-    private static bool IsUnderAppRootStatic(string path, string appRoot)
-    {
-        var full = Path.GetFullPath(path).TrimEnd('\\');
-        var root = appRoot.TrimEnd('\\');
-        if (full.Equals(root, StringComparison.OrdinalIgnoreCase)) return true;
-        return full.StartsWith(root + '\\', StringComparison.OrdinalIgnoreCase);
     }
 
     private static SizeEntry CloneEntry(SizeEntry source) => new()
@@ -1085,7 +1052,17 @@ public partial class MainWindow : Window
         {
             try
             {
-                var resolved = _cleaner.ResolveTargetFolder(_appRoot, name);
+                var resolved = Path.GetFullPath(name);
+                if (!Directory.Exists(resolved))
+                {
+                    throw new InvalidOperationException("Klasör bulunamadı.");
+                }
+
+                if (_cloud.IsExternalPath(resolved))
+                {
+                    throw new InvalidOperationException("Harici bulut konumu seçilemez.");
+                }
+
                 if (!targets.Contains(resolved, StringComparer.OrdinalIgnoreCase))
                 {
                     targets.Add(resolved);
