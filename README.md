@@ -13,6 +13,16 @@ Klasörleri ve içindekileri tarayarak kapasitelerine göre sıralama ve filtrel
 - Günlük alanı ve **Temizle** / **Yeniden Tara**
 - Modern arayüz, **açık / koyu tema** (tercih kaydedilir)
 
+## Ekran görüntüleri
+
+Disk veya klasör seçimi:
+
+![Hangi disk veya klasör taranacak](Themes/01-hdd-or-folder-scan.jpg)
+
+Tarama sonucu ve işlemler:
+
+![Klasör tarama sonucu ve işlemler](Themes/02-folder-scan-result-and-process.jpg)
+
 ## Portable exe oluşturma
 
 ```bat
