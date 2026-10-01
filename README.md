@@ -19,7 +19,7 @@ Klasörleri ve içindekileri tarayarak kapasitelerine göre sıralama ve filtrel
 publish-portable.bat
 ```
 
-Otomatik: Cursor agent işi bittiğinde (proje `stop` hook) `DirectoryManagement` altında değişiklik varsa `publish-portable.bat /nopause` çalışır. Çıktı: `publish\win-x64\DirectoryManagement.exe`
+Otomatik: Cursor agent işi bittiğinde (proje `stop` hook) `DirectoryManagement` altında değişiklik varsa `publish-portable.bat /nopause` çalışır. Çıktı: `publish\win-x64\DirectoryManagement-x64.exe` ve `publish\win-x86\DirectoryManagement-x86.exe`
 
 Manuel (pencere beklemeden): `publish-portable.bat /nopause`
 

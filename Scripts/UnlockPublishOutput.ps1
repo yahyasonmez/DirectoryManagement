@@ -1,8 +1,10 @@
-# publish\win-x64\DirectoryManagement.exe calisiyorsa kapatir.
+# publish klasorundeki portable exe calisiyorsa kapatir.
 # Dosya hala kilitliyse yeniden adlandirir; GenerateBundle eski exe'yi silmek zorunda kalmaz.
 param(
     [Parameter(Mandatory = $true)]
-    [string]$PublishDir
+    [string]$PublishDir,
+
+    [string]$ExeName = 'DirectoryManagement.exe'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -20,7 +22,7 @@ if (-not (Test-Path -LiteralPath $PublishDir)) {
 
 $publishFull = (Normalize-Path $PublishDir).TrimEnd('\')
 $prefix = $publishFull + '\'
-$exe = Join-Path $publishFull 'DirectoryManagement.exe'
+$exe = Join-Path $publishFull $ExeName
 
 function Test-PublishImage([string]$imagePath) {
     $norm = Normalize-Path $imagePath
@@ -31,14 +33,14 @@ function Test-PublishImage([string]$imagePath) {
 function Get-PublishProcessIds {
     $found = @{}
 
-    Get-CimInstance Win32_Process -Filter "Name = 'DirectoryManagement.exe'" -ErrorAction SilentlyContinue |
+    Get-CimInstance Win32_Process -Filter "Name LIKE 'DirectoryManagement%'" -ErrorAction SilentlyContinue |
         ForEach-Object {
             if (Test-PublishImage $_.ExecutablePath) {
                 $found[[int]$_.ProcessId] = $true
             }
         }
 
-    Get-Process -Name DirectoryManagement -ErrorAction SilentlyContinue |
+    Get-Process -Name 'DirectoryManagement*' -ErrorAction SilentlyContinue |
         ForEach-Object {
             $image = $null
             try { $image = $_.Path } catch { }
@@ -91,12 +93,13 @@ Clear-ReadOnly $exe
 
 if (-not (Test-Replaceable $exe)) {
     $stamp = Get-Date -Format 'yyyyMMddHHmmssfff'
-    $parked = Join-Path $publishFull "DirectoryManagement.$stamp.exe.old"
+    $parkedName = [System.IO.Path]::GetFileNameWithoutExtension($exe)
+    $parked = Join-Path $publishFull "$parkedName.$stamp.exe.old"
     Write-Host "Exe kilitli, kenara aliniyor: $parked"
     Move-Item -LiteralPath $exe -Destination $parked -Force
 }
 
-Get-ChildItem -LiteralPath $publishFull -Filter 'DirectoryManagement.*.exe.old' -ErrorAction SilentlyContinue |
+Get-ChildItem -LiteralPath $publishFull -Filter 'DirectoryManagement*.exe.old' -ErrorAction SilentlyContinue |
     ForEach-Object {
         Clear-ReadOnly $_.FullName
         try {
@@ -108,6 +111,15 @@ Get-ChildItem -LiteralPath $publishFull -Filter 'DirectoryManagement.*.exe.old' 
 
 if (-not (Test-Replaceable $exe)) {
     throw "Portable exe hala kilitli, uzerine yazilamiyor: $exe"
+}
+
+$legacy = Join-Path $publishFull 'DirectoryManagement.exe'
+if ($ExeName -ne 'DirectoryManagement.exe' -and (Test-Path -LiteralPath $legacy)) {
+    Clear-ReadOnly $legacy
+    if (Test-Replaceable $legacy) {
+        Remove-Item -LiteralPath $legacy -Force
+        Write-Host "Eski adsiz exe kaldirildi: $legacy"
+    }
 }
 
 exit 0

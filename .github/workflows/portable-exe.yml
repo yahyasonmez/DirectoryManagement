@@ -23,22 +23,40 @@ jobs:
         shell: powershell
         run: powershell -NoProfile -ExecutionPolicy Bypass -File .\Scripts\RegenerateAppIcon.ps1
 
-      - name: Portable exe yayinla
+      - name: Portable exe yayinla (64 bit)
         run: >
           dotnet publish DirectoryManagement.csproj
           -c Release -r win-x64 --self-contained true
           -p:PublishSingleFile=true
           -p:IncludeNativeLibrariesForSelfExtract=true
           -p:EnableCompressionInSingleFile=true
+          -p:AssemblyName=DirectoryManagement-x64
           -o publish/win-x64
+
+      - name: Portable exe yayinla (32 bit)
+        run: >
+          dotnet publish DirectoryManagement.csproj
+          -c Release -r win-x86 --self-contained true
+          -p:PublishSingleFile=true
+          -p:IncludeNativeLibrariesForSelfExtract=true
+          -p:EnableCompressionInSingleFile=true
+          -p:AssemblyName=DirectoryManagement-x86
+          -o publish/win-x86
 
       - uses: actions/upload-artifact@v5
         with:
-          name: DirectoryManagement-win-x64
-          path: publish/win-x64/DirectoryManagement.exe
+          name: DirectoryManagement-x64
+          path: publish/win-x64/DirectoryManagement-x64.exe
+
+      - uses: actions/upload-artifact@v5
+        with:
+          name: DirectoryManagement-x86
+          path: publish/win-x86/DirectoryManagement-x86.exe
 
       - name: Release'e ekle
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v3
         with:
-          files: publish/win-x64/DirectoryManagement.exe
+          files: |
+            publish/win-x64/DirectoryManagement-x64.exe
+            publish/win-x86/DirectoryManagement-x86.exe

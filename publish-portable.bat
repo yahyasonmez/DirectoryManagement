@@ -4,20 +4,37 @@ cd /d "%~dp0"
 echo Uygulama ikonlari yeniden uretiliyor...
 powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0Scripts\RegenerateAppIcon.ps1"
 if errorlevel 1 goto :fail
-echo Calisan portable kopya varsa kapatiliyor...
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0Scripts\UnlockPublishOutput.ps1" -PublishDir "%~dp0publish\win-x64"
+
+call :publish win-x64 x64
 if errorlevel 1 goto :fail
-echo Portable win-x64 derleniyor (.NET 10)...
-dotnet publish DirectoryManagement.csproj -c Release -r win-x64 --self-contained true ^
+call :publish win-x86 x86
+if errorlevel 1 goto :fail
+
+echo.
+echo Hazir:
+echo   %~dp0publish\win-x64\DirectoryManagement-x64.exe
+echo   %~dp0publish\win-x86\DirectoryManagement-x86.exe
+echo 64 bit Windows icin x64, 32 bit Windows icin x86 exe'yi kopyalayip calistirin.
+goto :done
+
+:publish
+set "RID=%~1"
+set "BITS=%~2"
+set "OUT=%~dp0publish\%RID%"
+set "EXE_NAME=DirectoryManagement-%BITS%"
+echo.
+echo Calisan portable kopya varsa kapatiliyor (%BITS%)...
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0Scripts\UnlockPublishOutput.ps1" -PublishDir "%OUT%" -ExeName "%EXE_NAME%.exe"
+if errorlevel 1 exit /b 1
+echo Portable %RID% derleniyor (.NET 10, %BITS%)...
+dotnet publish DirectoryManagement.csproj -c Release -r %RID% --self-contained true ^
   -p:PublishSingleFile=true ^
   -p:IncludeNativeLibrariesForSelfExtract=true ^
   -p:EnableCompressionInSingleFile=true ^
-  -o "%~dp0publish\win-x64"
-if errorlevel 1 goto :fail
-echo.
-echo Hazir: %~dp0publish\win-x64\DirectoryManagement.exe
-echo Bu exe'yi istediginiz klasore kopyalayip calistirin (portable).
-goto :done
+  -p:AssemblyName=%EXE_NAME% ^
+  -o "%OUT%"
+if errorlevel 1 exit /b 1
+exit /b 0
 
 :fail
 echo.
