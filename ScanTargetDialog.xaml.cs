@@ -97,18 +97,21 @@ public partial class ScanTargetDialog : Window
 
     protected override void OnClosed(EventArgs e)
     {
+        var accepted = _scanAccepted && !string.IsNullOrWhiteSpace(SelectedPath);
         if (_selectionTcs is { Task.IsCompleted: false } tcs)
         {
-            var path = _scanAccepted && !string.IsNullOrWhiteSpace(SelectedPath)
-                ? SelectedPath
-                : null;
-            tcs.TrySetResult(path);
+            tcs.TrySetResult(accepted ? SelectedPath : null);
         }
 
         base.OnClosed(e);
         if (ThemeService.Current != _themeBeforeDialog)
         {
             ThemeService.Apply(_themeBeforeDialog);
+        }
+
+        if (!accepted)
+        {
+            Application.Current?.Shutdown();
         }
     }
 

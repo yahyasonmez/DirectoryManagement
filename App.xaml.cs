@@ -35,6 +35,7 @@ public partial class App : Application
 
         var main = new MainWindow();
         Current.MainWindow = main;
+        Current.ShutdownMode = ShutdownMode.OnMainWindowClose;
         main.Show();
         await main.StartInitialScanAsync(selectedPath);
     }
