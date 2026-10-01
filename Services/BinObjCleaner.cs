@@ -11,35 +11,6 @@ public sealed class BinObjCleaner
 
     public int AccessErrors => _accessErrors;
 
-    public string ResolveTargetFolder(string root, string relativeName)
-    {
-        var name = relativeName.Trim();
-        if (string.IsNullOrWhiteSpace(name)) throw new InvalidOperationException("Boş klasör adı.");
-        if (name.IndexOfAny(['*', '?', '<', '>', '|', '"']) >= 0) throw new InvalidOperationException("Geçersiz karakter.");
-        if (name.Length >= 2 && name[1] == ':' && char.IsLetter(name[0])) throw new InvalidOperationException("Tam yol kullanılamaz.");
-
-        var parts = name.Split(['\\', '/'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Where(p => p != ".").ToArray();
-        foreach (var part in parts)
-        {
-            if (part == "..") throw new InvalidOperationException("Üst klasöre çıkış (..) kullanılamaz.");
-        }
-        if (parts.Length == 0) throw new InvalidOperationException("Geçersiz klasör adı.");
-
-        var full = parts.Aggregate(root, Path.Combine);
-        full = Path.GetFullPath(full);
-        var rootFull = Path.GetFullPath(root);
-        var rootPrefix = rootFull.TrimEnd('\\') + '\\';
-        if (!full.Equals(rootFull, StringComparison.OrdinalIgnoreCase) &&
-            !full.StartsWith(rootPrefix, StringComparison.OrdinalIgnoreCase))
-        {
-            throw new InvalidOperationException("Klasör uygulama konumunun dışında.");
-        }
-        if (_cloud.IsExternalPath(full)) throw new InvalidOperationException("Harici bulut konumu seçilemez.");
-        if (!Directory.Exists(full)) throw new InvalidOperationException("Klasör bulunamadı.");
-        return full;
-    }
-
     public IReadOnlyList<string> FindBinObjDirectories(IEnumerable<string> targetRoots, CancellationToken cancellationToken)
     {
         var found = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
