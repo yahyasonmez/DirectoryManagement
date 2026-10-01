@@ -468,7 +468,15 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (IsGridInteractiveClick(e.OriginalSource as DependencyObject))
+        var source = e.OriginalSource as DependencyObject;
+        if (FindVisualParent<CheckBox>(source) is not null)
+        {
+            ToggleCleanupSelection(FindVisualParent<DataGridRow>(source));
+            e.Handled = true;
+            return;
+        }
+
+        if (IsGridInteractiveClick(source))
         {
             return;
         }
@@ -487,6 +495,23 @@ public partial class MainWindow : Window
         SizeGrid.SelectedItems.Remove(entry);
         entry.IsSelectedForCleanup = false;
         e.Handled = true;
+    }
+
+    private void ToggleCleanupSelection(DataGridRow? gridRow)
+    {
+        if (gridRow?.Item is not SizeEntry entry || !entry.CanDelete)
+        {
+            return;
+        }
+
+        if (SizeGrid.SelectedItems.Contains(entry))
+        {
+            SizeGrid.SelectedItems.Remove(entry);
+        }
+        else
+        {
+            SizeGrid.SelectedItems.Add(entry);
+        }
     }
 
     private void CleanupCheckBox_Changed(object sender, RoutedEventArgs e)
