@@ -1,0 +1,136 @@
+## Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]uild/
+msbuild.log
+msbuild.err
+msbuild.wrn
+
+## Published / single-file output (rebuild with publish-portable.bat or dotnet publish)
+publish/
+*.publishproj
+
+## .NET
+project.lock.json
+project.fragment.lock.json
+artifacts/
+*.nuget.props
+*.nuget.targets
+*.nuget.dgspec.json
+*.nuget.g.props
+*.nuget.g.targets
+packages/
+*.nupkg
+*.snupkg
+
+## User-specific / IDE
+*.rsuser
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.userprefs
+.vs/
+.idea/
+*.sln.iml
+
+## Visual Studio
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+
+## Visual Studio cache / IntelliSense
+*.VC.db
+*.VC.VC.opendb
+*.opendb
+*.opensdf
+*.sdf
+*.cachefile
+*.VC.db-shm
+*.VC.db-wal
+
+## ReSharper / Rider
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+.idea/
+
+## Test / coverage
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+*.VisualState.xml
+TestResult.xml
+nunit-*.xml
+coverage*.json
+coverage*.xml
+coverage*.info
+*.coverage
+*.coveragexml
+
+## NCrunch
+_NCrunch_*
+.*crunch*.local.xml
+nCrunchTemp_*
+
+## Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+## macOS (if repo is cloned on Mac)
+.DS_Store
+.AppleDouble
+.LSOverride
+
+## JetBrains
+*.iml
+out/
+
+## Others
+*.log
+*.tlog
+*.tmp
+*.temp
+~$*
+*.bak
+*.swp
+*~
+
+## Secrets / local config (never commit)
+appsettings.Development.json
+appsettings.*.local.json
+secrets.json
+*.pfx
+*.p12
+*.key
+.env
+.env.*
+!.env.example
+
+## WPF / XAML designer
+*.g.i.cs
+*_wpftmp.csproj
+
+## NuGet fallback folder marker
+.nuget/

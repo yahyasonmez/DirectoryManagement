@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Themes\directory-management-logo.ico</ApplicationIcon>
+    <AssemblyName>DirectoryManagement</AssemblyName>
+    <Product>DirectoryManagement</Product>
+    <RootNamespace>DirectoryManagement</RootNamespace>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="Themes\directory-management-logo.png" />
+    <Resource Include="Themes\directory-management-logo-noBg.png" />
+    <Resource Include="Themes\directory-management-logo.ico" />
+  </ItemGroup>
+</Project>

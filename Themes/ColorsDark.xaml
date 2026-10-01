@@ -1,0 +1,32 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Color x:Key="WindowBackgroundColor">#121418</Color>
+    <Color x:Key="SurfaceColor">#1C2128</Color>
+    <Color x:Key="SurfaceAltColor">#2A313C</Color>
+    <Color x:Key="BorderColor">#3A4452</Color>
+    <Color x:Key="ForegroundColor">#E8EDF4</Color>
+    <Color x:Key="ForegroundMutedColor">#9AA8B8</Color>
+    <Color x:Key="PrimaryColor">#5B9DFF</Color>
+    <Color x:Key="PrimaryHoverColor">#7AB3FF</Color>
+    <Color x:Key="DangerColor">#F87171</Color>
+    <Color x:Key="RowAltColor">#232A34</Color>
+    <Color x:Key="SelectionColor">#1E5652</Color>
+    <Color x:Key="RowHoverColor">#2D6B65</Color>
+    <Color x:Key="ScanButtonBackgroundColor">#3A9E94</Color>
+    <Color x:Key="ScanButtonBorderColor">#4DB8AE</Color>
+
+    <SolidColorBrush x:Key="WindowBackgroundBrush" Color="{StaticResource WindowBackgroundColor}" />
+    <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}" />
+    <SolidColorBrush x:Key="SurfaceAltBrush" Color="{StaticResource SurfaceAltColor}" />
+    <SolidColorBrush x:Key="BorderBrush" Color="{StaticResource BorderColor}" />
+    <SolidColorBrush x:Key="ForegroundBrush" Color="{StaticResource ForegroundColor}" />
+    <SolidColorBrush x:Key="ForegroundMutedBrush" Color="{StaticResource ForegroundMutedColor}" />
+    <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource PrimaryColor}" />
+    <SolidColorBrush x:Key="PrimaryHoverBrush" Color="{StaticResource PrimaryHoverColor}" />
+    <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
+    <SolidColorBrush x:Key="DataGridRowAltBrush" Color="{StaticResource RowAltColor}" />
+    <SolidColorBrush x:Key="SelectionBrush" Color="{StaticResource SelectionColor}" />
+    <SolidColorBrush x:Key="RowHoverBrush" Color="{StaticResource RowHoverColor}" />
+    <SolidColorBrush x:Key="ScanButtonBackgroundBrush" Color="{StaticResource ScanButtonBackgroundColor}" />
+    <SolidColorBrush x:Key="ScanButtonBorderBrush" Color="{StaticResource ScanButtonBorderColor}" />
+</ResourceDictionary>
