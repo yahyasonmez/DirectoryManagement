@@ -5,6 +5,11 @@ param(
 
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
+# PowerShell 7 yalnizca System.Drawing facade'ini gorur; Bitmap System.Drawing.Common icindedir.
+$drawingAssembly = [System.Drawing.Bitmap].Assembly.Location
+if ([string]::IsNullOrWhiteSpace($drawingAssembly)) {
+    throw "System.Drawing derlemesi bulunamadi."
+}
 
 $themes = Join-Path $ProjectRoot 'Themes'
 $source = Join-Path $themes 'directory-management-logo.jfif'
@@ -18,7 +23,7 @@ if (-not (Test-Path $source)) {
 $pngOut = Join-Path $themes 'directory-management-logo.png'
 $icoOut = Join-Path $themes 'directory-management-logo.ico'
 
-Add-Type -ReferencedAssemblies System.Drawing @"
+Add-Type -ReferencedAssemblies $drawingAssembly @"
 using System;
 using System.Collections.Generic;
 using System.Drawing;
